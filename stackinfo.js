@@ -13,6 +13,9 @@ module.exports = function(ex) {
 }
 
 function parseStacktrace(mode, trace) {
+    if(parsers[mode] === undefined) 
+        throw new Error("browser "+mode+" not supported")
+    
     var results = []
     for(var n = 0; n<trace.length; n++) {
         results.push(parsers[mode](trace[n]))
@@ -70,59 +73,62 @@ var parsers = {
     chrome: function(line) {
         var m = line.match(CHROME_STACK_LINE);
         if (m) {
-            return {
-                   
-            }
+            var file = m[5] || m[12] || m[19]
+            var fn = m[2] || m[9] || m[16]
+            var lineNumber = m[7] || m[14]
+            var column = m[8] || m[15]
         } else {
-            throw new Error("Couldn't parse exception line: "+line)
+            //throw new Error("Couldn't parse exception line: "+line)
+        }
+        
+        return {
+            file: file,
+            function: fn,
+            line: lineNumber,
+            column: column
+        }
+    },
+    
+    firefox: function(line) {
+        var m = line.match(FIREFOX_STACK_LINE);
+        if (m) {
+            var file = m[6]
+            var fn = m[1]
+            var lineNumber = m[8]
+        }
+        
+        return {
+            file: file,
+            function: fn,
+            line: lineNumber
+        }
+    },
+    
+    ie: function(line) {
+        var m = line.match(IE_STACK_LINE);
+        if (m) {
+            var file = m[3] || m[8]
+            var fn = m[2] || m[8]
+            var lineNumber = m[5] || m[11]
+            var column = m[6] || m[12]
+        }
+        
+        return {
+            file: file,
+            function: fn,
+            line: lineNumber,
+            column: column
         }
     }
-
 }
 
 
 
-// The following regex patterns were originally taken from google closure library: https://code.google.com/p/closure-library/source/browse/closure/goog/testing/stacktrace.js
-
+// The following 2 regex patterns were originally taken from google closure library: https://code.google.com/p/closure-library/source/browse/closure/goog/testing/stacktrace.js
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
 var IDENTIFIER_PATTERN_ = '[a-zA-Z_$][\\w$]*';
-
-// RegExp pattern for function name alias in the Chrome stack trace.
-var CHROME_ALIAS_PATTERN_ =
-    '(?: \\[as (' + IDENTIFIER_PATTERN_ + ')\\])?';
-
-
-// RegExp pattern for function names and constructor calls in the Chrome stack trace.
-var CHROME_FUNCTION_NAME_PATTERN_ =
-    '(?:new )?(?:' + IDENTIFIER_PATTERN_ +
-    '|<anonymous>)';
-
-
-// RegExp pattern for function call in the Chrome stack trace.
-// Creates 3 submatches with context object (optional), function name and function alias (optional).
-var CHROME_FUNCTION_CALL_PATTERN_ =
-    ' (?:(.*?)\\.)?(' + CHROME_FUNCTION_NAME_PATTERN_ +
-    ')' + CHROME_ALIAS_PATTERN_;
-
-
 // RegExp pattern for an URL + position inside the file.
-var URL_PATTERN_ =
-    '((?:http|https|file)://[^\\s)]+|javascript:.*)';
-
-
-// RegExp pattern for an URL + line number + column number in Chrome.
-// The URL is either in submatch 1 or submatch 2.
-var CHROME_URL_PATTERN_ = ' (?:' +
-    '\\(unknown source\\)' + '|' +
-    '\\(native\\)' + '|' +
-    '\\((?:eval at )?' + URL_PATTERN_ + '\\)' + '|' +
-    URL_PATTERN_ + ')';
-
-var CHROME_STACK_LINE_original = '(?:' + CHROME_FUNCTION_CALL_PATTERN_ + ')?' + CHROME_URL_PATTERN_ + '$';
-
-// Regular expression for parsing one stack frame in Chrome.
-var CHROME_STACK_FRAME_REGEXP_ = new RegExp('^    at' + CHROME_STACK_LINE_original);
-
+var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+|javascript:.*)';
 
 
 var CHROME_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*):(\\d*))'
@@ -131,10 +137,21 @@ var CHROME_COMPOUND_IDENTIFIER = "((new )?"+IDENTIFIER_PATTERN_+'(\.'+IDENTIFIER
 // output from stacktrace.js is: "name()@..." instead of "name (...)"
 var CHROME_ANONYMOUS_FUNCTION = CHROME_COMPOUND_IDENTIFIER+'\\(\\)'+'@'+CHROME_FILE_AND_LINE
 var CHROME_NORMAL_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' \\('+CHROME_FILE_AND_LINE+'\\)'
-var CHROME_NATIVE_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' \\(native\\)'
+var CHROME_NATIVE_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' (\\(native\\))'
 
 var CHROME_FUNCTION_CALL = '('+CHROME_ANONYMOUS_FUNCTION+"|"+CHROME_NORMAL_FUNCTION+"|"+CHROME_NATIVE_FUNCTION+')'
 
 var CHROME_STACK_LINE = '^'+CHROME_FUNCTION_CALL+'$'
 
-var nothing = 3
+
+var FIREFOX_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*))'
+var FIREFOX_COMPOUND_IDENTIFIER = '('+IDENTIFIER_PATTERN_+'((\\(\\))?|(\\.|\\<|/)*))*'
+var FIREFOX_FUNCTION_CALL = '('+FIREFOX_COMPOUND_IDENTIFIER+')@'+FIREFOX_FILE_AND_LINE
+var FIREFOX_STACK_LINE = '^'+FIREFOX_FUNCTION_CALL+'$'
+
+var IE_WHITESPACE = '[\\w \\t]'
+var IE_FILE_AND_LINE = CHROME_FILE_AND_LINE
+var IE_ANONYMOUS = '('+IE_WHITESPACE+'*({anonymous}\\(\\)))@\\('+IE_FILE_AND_LINE+'\\)'
+var IE_NORMAL_FUNCTION = '('+IDENTIFIER_PATTERN_+')@'+IE_FILE_AND_LINE
+var IE_FUNCTION_CALL = '('+IE_NORMAL_FUNCTION+'|'+IE_ANONYMOUS+')'+IE_WHITESPACE+'*'
+var IE_STACK_LINE = '^'+IE_FUNCTION_CALL+'$'

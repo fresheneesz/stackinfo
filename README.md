@@ -32,6 +32,13 @@ npm install stackinfo
 Usage
 =====
 
+Browser Support
+=========
+Tested in the following browsers:
+* Chrome 31
+* Firefox 26
+* IE 10
+
 
 Todo
 ====
