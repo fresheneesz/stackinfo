@@ -1,0 +1,48 @@
+
+<script src="../generatedBuild/stackinfo.umd.js"></script>
+<script>
+    function A(asdf) {
+        B(asdf)
+    }
+    
+    function B(asdf) {
+        C.call(this, asdf)
+    }
+    
+    function C(asdf) {
+        new D(asdf)
+    }
+    
+    function D(asdf) {
+        E.fn1(asdf)
+    }
+    
+    var E = {
+        fn1: function(asdf) {
+            F[0].fn2()(asdf)
+        }
+    }
+    
+    var F = [{
+            fn2: function() {
+                return function(asdf) {
+                    G(asdf)
+                }
+            }
+        }]
+    
+    var G = function(asdf) {
+        ;[1].forEach(function() {
+            H(asdf)  
+        })  
+    }
+    
+    var H = function() {
+        var trace = stackinfo();
+        //Output however you want!
+        console.dir(trace);
+    }
+
+    A(23)
+
+</script>
