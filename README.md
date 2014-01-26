@@ -14,7 +14,12 @@ Usage
 =====
 
 ```javascript
-var stackinfo = require('stackinfo')
+var stackinfo = require('stackinfo') // common js
+
+require('node_modules/generatedBuild/stackinfo.umd.js', function(stackinfo) {/*...*/}) // require.js
+```
+```
+<script src="node_modules/generatedBuild/stackinfo.umd.js"></script> <!-- browser global -->
 ```
 
 `stackinfo([<exception>])` - returns stack trace information in the below format. If `<exception>` is passed, the stacktrace will be taken from that exception, otherwise a stacktrace will be generated for the current call. Passed exceptions doesn't work in IE or Safari 5 (this is a limitation of stacktrace.js).
@@ -38,11 +43,12 @@ Tested in the following browsers:
 * Firefox 26
 * IE 10
 
-
 Todo
 ====
 
 * Test more browsers
+ * Particularly latest version of Opera, Opera mini, Android mobile, Safari, and Safari iOS
+* Create unit tests once deadunit supports browser
 
 How to Contribute!
 ============
