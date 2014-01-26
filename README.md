@@ -1,26 +1,7 @@
 `stackinfo`
 ========
 
-Gets an object containing normalized stacktrace information across browsers.
-
-Example
-=======
-
-```javascript
-var stackinfo = require('stackinfo')
-
-function getInfo() {
-  stackinfo()
-}
-
-var info = getInfo() // returns the info
-
-try {
-  something()
-} catch(e) {
-  var moreInfo = stackinfo(e) // gets a stacktrace from an exception
-}
-```
+Gets an object containing normalized stacktrace information across browsers. This uses [stacktrace.js](https://github.com/stacktracejs/stacktrace.js) to get stack traces
 
 Install
 =======
@@ -32,8 +13,26 @@ npm install stackinfo
 Usage
 =====
 
+```javascript
+var stackinfo = require('stackinfo')
+```
+
+`stackinfo([<exception>])` - returns stack trace information in the below format. If `<exception>` is passed, the stacktrace will be taken from that exception, otherwise a stacktrace will be generated for the current call. Passed exceptions doesn't work in IE or Safari 5 (this is a limitation of stacktrace.js).
+
+##Format##
+
+The stacktrace information is returned as a list of objects that each have the following properties:
+* `function` - the name of the function that was running in the particular stack frame
+* `file` - the file-path of the file in which the function was running
+* `line` - the line number
+* `column` - the column number
+
+Any of these properties may be undefined if they are unavailable.
+
+
 Browser Support
 =========
+
 Tested in the following browsers:
 * Chrome 31
 * Firefox 26
@@ -70,7 +69,7 @@ Change Log
 =========
 
 * 0.0.1
-  * Initial release
+  * Initial release - supports latest versions of chrome, firefox, and ie
 
 License
 =======

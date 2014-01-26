@@ -3,8 +3,9 @@ var printStackTrace = require('stacktrace-js')
 module.exports = function(ex) {
     var trace = printStackTrace(ex)
 
-    // strip stacktrace-js internals
-    trace.splice(0,4)
+    if(ex !== undefined) {
+        trace.splice(0,4) // strip stacktrace-js internals
+    }
 
     var modeException = ex || createException()
 
