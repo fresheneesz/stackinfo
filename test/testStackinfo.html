@@ -38,11 +38,38 @@
     }
     
     var H = function() {
-        var trace = stackinfo();
+        var trace = stackinfo()
         
-        console.log(JSON.stringify(trace));
+        console.log(JSON.stringify(trace))
     }
 
     A(23)
+
+    function bench() {
+        var t0 = Date.now()
+        for(var n=0; n<1000; n++) {
+            var trace = stackinfo()
+        }
+
+        return Date.now() - t0
+    }
+
+    function bench2() {
+        console.log(stackinfo.chrome)
+        var line = "Object.printStackTrace.implementation.createException (file:///F:/billysFile/code/javascript/nodejs/deadunit/browserPackage/deadunit.browser.gen.umd.js:942:19)"
+
+        console.log(line.match(stackinfo.chrome))
+
+        var t0 = Date.now()
+        for(var n=0; n<1000; n++) {
+            line.match(stackinfo.chrome)
+        }
+
+        return Date.now() - t0
+    }
+
+    var trace = stackinfo()
+    console.log("Benchmark took "+bench()+"ms")
+    console.log("Benchmark 2 took "+bench2()+"ms")
 
 </script>

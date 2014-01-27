@@ -1,7 +1,7 @@
 `stackinfo`
 ========
 
-Gets an object containing normalized stacktrace information across browsers. This uses [stacktrace.js](https://github.com/stacktracejs/stacktrace.js) to get stack traces
+Gets an object containing normalized stacktrace information across browsers. If you want to programmatically inspect the stack, this is the module for you. This uses [stacktrace.js](https://github.com/stacktracejs/stacktrace.js) to get stack traces.
 
 Install
 =======
@@ -43,12 +43,17 @@ Tested in the following browsers:
 * Firefox 26
 * IE 10
 
+Note that stackinfo doesn't work in node.js, but if you need that check out [node-stack-trace](https://github.com/felixge/node-stack-trace)
+
 Todo
 ====
 
 * Test more browsers
  * Particularly latest version of Opera, Opera mini, Android mobile, Safari, and Safari iOS
 * Create unit tests once deadunit supports browser
+* Support node.js via node-stack-trace
+ * Possibly also use this for chrome, since it works in chrome too
+* Instead of returning an array of static objects, parse the stacktrace on the fly using accessors (for performance reasons - so you only do the parsing you need to)
 
 How to Contribute!
 ============
@@ -74,6 +79,8 @@ How to submit pull requests:
 Change Log
 =========
 
+* 0.0.2
+  * fixing incorrect regex which caused major performance issues
 * 0.0.1
   * Initial release - supports latest versions of chrome, firefox, and ie
 
