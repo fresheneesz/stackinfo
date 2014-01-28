@@ -20,12 +20,12 @@
     
     var E = {
         fn1: function(asdf) {
-            F[0].fn2()(asdf)
+            F[0][6]()(asdf)
         }
     }
     
     var F = [{
-            fn2: function() {
+            6: function() {
                 return function(asdf) {
                     G(asdf)
                 }
@@ -72,7 +72,7 @@
         return Date.now() - t0
     }
 
-    console.log("Benchmark took "+bench()+"ms")
-    console.log("Benchmark 2 took "+bench2()+"ms")
+    //console.log("Benchmark took "+bench()+"ms")
+    //console.log("Benchmark 2 took "+bench2()+"ms")
 
 </script>

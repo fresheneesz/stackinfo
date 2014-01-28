@@ -93,9 +93,9 @@ var parsers = {
     firefox: function(line) {
         var m = line.match(FIREFOX_STACK_LINE);
         if (m) {
-            var file = m[6]
+            var file = m[8]
             var fn = m[1]
-            var lineNumber = m[8]
+            var lineNumber = m[10]
         }
         
         return {
@@ -108,7 +108,7 @@ var parsers = {
     ie: function(line) {
         var m = line.match(IE_STACK_LINE);
         if (m) {
-            var file = m[3] || m[8]
+            var file = m[3] || m[9]
             var fn = m[2] || m[8]
             var lineNumber = m[5] || m[11]
             var column = m[6] || m[12]
@@ -131,7 +131,9 @@ var IDENTIFIER_PATTERN_ = '[a-zA-Z_$][\\w$]*';
 // RegExp pattern for an URL + position inside the file.
 var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+|javascript:.*)';
 
-var CHROME_STACKTRACE_JS_GETSOURCE_FAILURE = 'getSource failed with url((?!'+'@\\(\\)'+').)*'
+var STACKTRACE_JS_GETSOURCE_FAILURE = 'getSource failed with url'
+
+var CHROME_STACKTRACE_JS_GETSOURCE_FAILURE = STACKTRACE_JS_GETSOURCE_FAILURE+'((?!'+'\\(\\)@'+').)*'
 
 var CHROME_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*):(\\d*))'
 var CHROME_COMPOUND_IDENTIFIER = "((new )?"+IDENTIFIER_PATTERN_+'(\\.'+IDENTIFIER_PATTERN_+')*)'
@@ -146,9 +148,11 @@ var CHROME_FUNCTION_CALL = '('+CHROME_ANONYMOUS_FUNCTION+"|"+CHROME_NORMAL_FUNCT
 var CHROME_STACK_LINE = new RegExp('^'+CHROME_FUNCTION_CALL+'$')  // precompile them so its faster
 
 
+var FIREFOX_STACKTRACE_JS_GETSOURCE_FAILURE = STACKTRACE_JS_GETSOURCE_FAILURE+'((?!'+'\\(\\)@'+').)*'+'\\(\\)'
 var FIREFOX_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*))'
-var FIREFOX_COMPOUND_IDENTIFIER = '('+IDENTIFIER_PATTERN_+'((\\(\\))?|(\\.|\\<|/)*))*'
-var FIREFOX_FUNCTION_CALL = '('+FIREFOX_COMPOUND_IDENTIFIER+')@'+FIREFOX_FILE_AND_LINE
+var FIREFOX_ARRAY_PART = '\\[\\d*\\]'
+var FIREFOX_COMPOUND_IDENTIFIER = '(('+IDENTIFIER_PATTERN_+'|'+FIREFOX_ARRAY_PART+')((\\(\\))?|(\\.|\\<|/)*))*'
+var FIREFOX_FUNCTION_CALL = '('+FIREFOX_COMPOUND_IDENTIFIER+'|'+FIREFOX_STACKTRACE_JS_GETSOURCE_FAILURE+')@'+FIREFOX_FILE_AND_LINE
 var FIREFOX_STACK_LINE = new RegExp('^'+FIREFOX_FUNCTION_CALL+'$')
 
 var IE_WHITESPACE = '[\\w \\t]'
