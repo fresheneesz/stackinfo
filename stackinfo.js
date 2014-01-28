@@ -1,25 +1,53 @@
 var printStackTrace = require('stacktrace-js')
 
+var mode = exceptionMode(createException()) // basically what browser this is
+
 module.exports = function(ex) {
+    if(parsers[mode] === undefined)
+        throw new Error("browser "+mode+" not supported")
+
     var trace = printStackTrace(ex)
 
     if(ex === undefined) {
         trace.splice(0,4) // strip stacktrace-js internals
     }
 
-    var modeException = ex || createException()
-
-    var mode = exceptionMode(modeException)
-    return parseStacktrace(mode, trace)
+    return parseStacktrace(trace)
 }
 
-function parseStacktrace(mode, trace) {
-    if(parsers[mode] === undefined) 
-        throw new Error("browser "+mode+" not supported")
-    
+function TraceInfo(traceline) {
+    this.traceline = traceline
+}
+TraceInfo.prototype = {
+    get file() {
+        return getInfo(this).file
+    },
+    get fn() {
+        return getInfo(this).function
+    },
+    get line() {
+        return getInfo(this).line
+    },
+    get column() {
+        return getInfo(this).column
+    },
+    get info() {
+        return getInfo(this)
+    }
+}
+
+function getInfo(traceInfo) {
+    if(traceInfo.cache === undefined) {
+        traceInfo.cache = parsers[mode](traceInfo.traceline)
+    }
+
+    return traceInfo.cache
+}
+
+function parseStacktrace(trace) {
     var results = []
     for(var n = 0; n<trace.length; n++) {
-        results.push(parsers[mode](trace[n]))
+        results.push(new TraceInfo(trace[n]))
     }
     return results
 }
@@ -161,5 +189,3 @@ var IE_ANONYMOUS = '('+IE_WHITESPACE+'*({anonymous}\\(\\)))@\\('+IE_FILE_AND_LIN
 var IE_NORMAL_FUNCTION = '('+IDENTIFIER_PATTERN_+')@'+IE_FILE_AND_LINE
 var IE_FUNCTION_CALL = '('+IE_NORMAL_FUNCTION+'|'+IE_ANONYMOUS+')'+IE_WHITESPACE+'*'
 var IE_STACK_LINE = new RegExp('^'+IE_FUNCTION_CALL+'$')
-
-module.exports.chrome = CHROME_STACK_LINE

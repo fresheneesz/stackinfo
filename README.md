@@ -3,6 +3,14 @@
 
 Gets an object containing normalized stacktrace information across browsers. If you want to programmatically inspect the stack, this is the module for you. This uses [stacktrace.js](https://github.com/stacktracejs/stacktrace.js) to get stack traces.
 
+Example
+======
+
+```javascript
+var info = stackinfo()
+console.log('This is line '+(info[0].line + 1))
+```
+
 Install
 =======
 
@@ -26,11 +34,12 @@ require('node_modules/generatedBuild/stackinfo.umd.js', function(stackinfo) {/*.
 
 ##Format##
 
-The stacktrace information is returned as a list of objects that each have the following properties:
+The stacktrace information is returned as a list of objects that each have getter properties that parse the stacktrace line (and cache the result). The properties are:
 * `function` - the name of the function that was running in the particular stack frame
 * `file` - the file-path of the file in which the function was running
 * `line` - the line number
 * `column` - the column number
+* `info` - an object containing the above 4 properties
 
 Any of these properties may be undefined if they are unavailable.
 
@@ -79,6 +88,10 @@ How to submit pull requests:
 Change Log
 =========
 
+* 1.0.0
+  * BREAKING CHANGE
+  * For performance reasons, a stackinfo element no longer parses the stacktrace upfront, instead it parses it once the function, file, line, or column are asked for.
+  * This means that looping through the element will no longer give you the properties - you have to access them via their getters
 * 0.0.4
   * adding getSource error regex for ie and firefox
 * 0.0.3

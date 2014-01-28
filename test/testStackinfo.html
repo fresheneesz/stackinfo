@@ -42,7 +42,7 @@
         moar(function() {
             var trace = stackinfo()
             trace.forEach(function(v) {
-                console.log(JSON.stringify(v))
+                console.log(JSON.stringify(v.info))
             })
         })
     }
@@ -57,22 +57,17 @@
 
         return Date.now() - t0
     }
-
     function bench2() {
-        console.log(stackinfo.chrome)
-        var line = "Object.printStackTrace.implementation.createException (file:///F:/billysFile/code/javascript/nodejs/deadunit/browserPackage/deadunit.browser.gen.umd.js:942:19)"
-
-        console.log(line.match(stackinfo.chrome))
-
         var t0 = Date.now()
         for(var n=0; n<1000; n++) {
-            line.match(stackinfo.chrome)
+            var trace = stackinfo()
+            var x = trace[0].line
         }
 
         return Date.now() - t0
     }
 
-    //console.log("Benchmark took "+bench()+"ms")
-    //console.log("Benchmark 2 took "+bench2()+"ms")
+    console.log("Generation benchmark took "+bench()+"ms")
+    console.log("Generation + parsing one line (benchmark 2) took "+bench2()+"ms")
 
 </script>
