@@ -3,7 +3,7 @@ var printStackTrace = require('stacktrace-js')
 module.exports = function(ex) {
     var trace = printStackTrace(ex)
 
-    if(ex !== undefined) {
+    if(ex === undefined) {
         trace.splice(0,4) // strip stacktrace-js internals
     }
 
@@ -74,10 +74,10 @@ var parsers = {
     chrome: function(line) {
         var m = line.match(CHROME_STACK_LINE);
         if (m) {
-            var file = m[5] || m[12] || m[19]
-            var fn = m[2] || m[9] || m[16]
-            var lineNumber = m[7] || m[14]
-            var column = m[8] || m[15]
+            var file = m[7] || m[14] || m[21]
+            var fn = m[4] || m[11] || m[18]
+            var lineNumber = m[9] || m[16]
+            var column = m[10] || m[17]
         } else {
             //throw new Error("Couldn't parse exception line: "+line)
         }
@@ -131,12 +131,13 @@ var IDENTIFIER_PATTERN_ = '[a-zA-Z_$][\\w$]*';
 // RegExp pattern for an URL + position inside the file.
 var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+|javascript:.*)';
 
+var CHROME_STACKTRACE_JS_GETSOURCE_FAILURE = 'getSource failed with url((?!'+'@\\(\\)'+').)*'
 
 var CHROME_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*):(\\d*))'
 var CHROME_COMPOUND_IDENTIFIER = "((new )?"+IDENTIFIER_PATTERN_+'(\\.'+IDENTIFIER_PATTERN_+')*)'
 
 // output from stacktrace.js is: "name()@..." instead of "name (...)"
-var CHROME_ANONYMOUS_FUNCTION = CHROME_COMPOUND_IDENTIFIER+'\\(\\)'+'@'+CHROME_FILE_AND_LINE
+var CHROME_ANONYMOUS_FUNCTION = '('+CHROME_STACKTRACE_JS_GETSOURCE_FAILURE+'|'+CHROME_COMPOUND_IDENTIFIER+')\\(\\)'+'@'+CHROME_FILE_AND_LINE
 var CHROME_NORMAL_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' \\('+CHROME_FILE_AND_LINE+'\\)'
 var CHROME_NATIVE_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' (\\(native\\))'
 

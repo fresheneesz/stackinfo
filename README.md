@@ -79,6 +79,8 @@ How to submit pull requests:
 Change Log
 =========
 
+* 0.0.3
+  * adding regex for parsing stacktrace.js getSource error, which makes it so the file and line number can still be reported even if the function name can't be guessed
 * 0.0.2
   * fixing incorrect regex which caused major performance issues
 * 0.0.1
