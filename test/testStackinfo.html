@@ -70,4 +70,14 @@
     console.log("Generation benchmark took "+bench()+"ms")
     console.log("Generation + parsing one line (benchmark 2) took "+bench2()+"ms")
 
+    // makes it easier to add cases - instead of having to reproduce an exception that creates such a traceline
+    testTraceline("ProtoObjectFactory.<anonymous> (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1459:20)")
+    testTraceline("(?)()@http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:79:15")
+
+    function testTraceline(line) {
+        var result = stackinfo.parsers[stackinfo.mode](line)
+
+        console.log(line+' - '+result.file+' '+result.function+' '+result.line+' '+result.column)
+    }
+
 </script>

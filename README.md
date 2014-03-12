@@ -88,6 +88,8 @@ How to submit pull requests:
 Change Log
 =========
 
+* 1.0.2
+  * adding a couple chrome trace patterns that previously didn't parse
 * 1.0.0
   * BREAKING CHANGE
   * For performance reasons, a stackinfo element no longer parses the stacktrace upfront, instead it parses it once the function, file, line, or column are asked for.

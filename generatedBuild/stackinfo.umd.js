@@ -1,4 +1,55 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.stackinfo=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+
+
+module.exports = exceptionMode(createException()) // basically what browser this is
+
+// verbatim from `mode` in stacktrace.js as of 2014-01-23
+function exceptionMode(e) {
+    if (e['arguments'] && e.stack) {
+        return 'chrome';
+    } else if (e.stack && e.sourceURL) {
+        return 'safari';
+    } else if (e.stack && e.number) {
+        return 'ie';
+    } else if (typeof e.message === 'string' && typeof window !== 'undefined' && window.opera) {
+        // e.message.indexOf("Backtrace:") > -1 -> opera
+        // !e.stacktrace -> opera
+        if (!e.stacktrace) {
+            return 'opera9'; // use e.message
+        }
+        // 'opera#sourceloc' in e -> opera9, opera10a
+        if (e.message.indexOf('\n') > -1 && e.message.split('\n').length > e.stacktrace.split('\n').length) {
+            return 'opera9'; // use e.message
+        }
+        // e.stacktrace && !e.stack -> opera10a
+        if (!e.stack) {
+            return 'opera10a'; // use e.stacktrace
+        }
+        // e.stacktrace && e.stack -> opera10b
+        if (e.stacktrace.indexOf("called from line") < 0) {
+            return 'opera10b'; // use e.stacktrace, format differs from 'opera10a'
+        }
+        // e.stacktrace && e.stack -> opera11
+        return 'opera11'; // use e.stacktrace, format differs from 'opera10a', 'opera10b'
+    } else if (e.stack && !e.fileName) {
+        // Chrome 27 does not have e.arguments as earlier versions,
+        // but still does not have e.fileName as Firefox
+        return 'chrome';
+    } else if (e.stack) {
+        return 'firefox';
+    }
+    return 'other';
+}
+
+function createException() {
+    try {
+        this.undef();
+    } catch (e) {
+        return e;
+    }
+}
+
+},{}],2:[function(_dereq_,module,exports){
 // Domain Public by Eric Wendelin http://eriwen.com/ (2008)
 //                  Luke Smith http://lucassmith.name/ (2008)
 //                  Loic Dachary <loic@dachary.org> (2008)
@@ -461,10 +512,10 @@
 
 	return printStackTrace;
 }));
-},{}],2:[function(_dereq_,module,exports){
+},{}],3:[function(_dereq_,module,exports){
 var printStackTrace = _dereq_('stacktrace-js')
-
-var mode = exceptionMode(createException()) // basically what browser this is
+var parsers = _dereq_('./tracelineParser')
+var mode = _dereq_('./exceptionMode')
 
 module.exports = function(ex) {
     if(parsers[mode] === undefined)
@@ -516,60 +567,19 @@ function parseStacktrace(trace) {
     return results
 }
 
-// verbatim from `mode` in stacktrace.js as of 2014-01-23
-function exceptionMode(e) {
-    if (e['arguments'] && e.stack) {
-        return 'chrome';
-    } else if (e.stack && e.sourceURL) {
-        return 'safari';
-    } else if (e.stack && e.number) {
-        return 'ie';
-    } else if (typeof e.message === 'string' && typeof window !== 'undefined' && window.opera) {
-        // e.message.indexOf("Backtrace:") > -1 -> opera
-        // !e.stacktrace -> opera
-        if (!e.stacktrace) {
-            return 'opera9'; // use e.message
-        }
-        // 'opera#sourceloc' in e -> opera9, opera10a
-        if (e.message.indexOf('\n') > -1 && e.message.split('\n').length > e.stacktrace.split('\n').length) {
-            return 'opera9'; // use e.message
-        }
-        // e.stacktrace && !e.stack -> opera10a
-        if (!e.stack) {
-            return 'opera10a'; // use e.stacktrace
-        }
-        // e.stacktrace && e.stack -> opera10b
-        if (e.stacktrace.indexOf("called from line") < 0) {
-            return 'opera10b'; // use e.stacktrace, format differs from 'opera10a'
-        }
-        // e.stacktrace && e.stack -> opera11
-        return 'opera11'; // use e.stacktrace, format differs from 'opera10a', 'opera10b'
-    } else if (e.stack && !e.fileName) {
-        // Chrome 27 does not have e.arguments as earlier versions,
-        // but still does not have e.fileName as Firefox
-        return 'chrome';
-    } else if (e.stack) {
-        return 'firefox';
-    }
-    return 'other';
-}
+// here because i'm lazy, they're here for testing only
+module.exports.parsers = parsers
+module.exports.mode = mode
+},{"./exceptionMode":1,"./tracelineParser":4,"stacktrace-js":2}],4:[function(_dereq_,module,exports){
 
-function createException() {
-    try {
-        this.undef();
-    } catch (e) {
-        return e;
-    }
-}
-
-var parsers = {
+module.exports = {
     chrome: function(line) {
         var m = line.match(CHROME_STACK_LINE);
         if (m) {
-            var file = m[7] || m[14] || m[21]
-            var fn = m[4] || m[11] || m[18]
-            var lineNumber = m[9] || m[16]
-            var column = m[10] || m[17]
+            var file = m[8] || m[15] || m[22]
+            var fn = m[4] || m[7] || m[12] || m[19]
+            var lineNumber = m[10] || m[17]
+            var column = m[11] || m[18]
         } else {
             //throw new Error("Couldn't parse exception line: "+line)
         }
@@ -628,10 +638,13 @@ var STACKTRACE_JS_GETSOURCE_FAILURE = 'getSource failed with url'
 var CHROME_STACKTRACE_JS_GETSOURCE_FAILURE = STACKTRACE_JS_GETSOURCE_FAILURE+'((?!'+'\\(\\)@'+').)*'
 
 var CHROME_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*):(\\d*))'
-var CHROME_COMPOUND_IDENTIFIER = "((new )?"+IDENTIFIER_PATTERN_+'(\\.'+IDENTIFIER_PATTERN_+')*)'
+var CHROME_IDENTIFIER_PATTERN = '\\<?'+IDENTIFIER_PATTERN_+'\\>?'
+var CHROME_COMPOUND_IDENTIFIER = "((new )?"+CHROME_IDENTIFIER_PATTERN+'(\\.'+CHROME_IDENTIFIER_PATTERN+')*)'
+var CHROME_UNKNOWN_IDENTIFIER = "(\\(\\?\\))"
 
 // output from stacktrace.js is: "name()@..." instead of "name (...)"
-var CHROME_ANONYMOUS_FUNCTION = '('+CHROME_STACKTRACE_JS_GETSOURCE_FAILURE+'|'+CHROME_COMPOUND_IDENTIFIER+')\\(\\)'+'@'+CHROME_FILE_AND_LINE
+var CHROME_ANONYMOUS_FUNCTION = '('+CHROME_STACKTRACE_JS_GETSOURCE_FAILURE+'|'+CHROME_COMPOUND_IDENTIFIER+'|'+CHROME_UNKNOWN_IDENTIFIER+')'
+                                    +'\\(\\)'+'@'+CHROME_FILE_AND_LINE
 var CHROME_NORMAL_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' \\('+CHROME_FILE_AND_LINE+'\\)'
 var CHROME_NATIVE_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' (\\(native\\))'
 
@@ -653,6 +666,6 @@ var IE_ANONYMOUS = '('+IE_WHITESPACE+'*({anonymous}\\(\\)))@\\('+IE_FILE_AND_LIN
 var IE_NORMAL_FUNCTION = '('+IDENTIFIER_PATTERN_+')@'+IE_FILE_AND_LINE
 var IE_FUNCTION_CALL = '('+IE_NORMAL_FUNCTION+'|'+IE_ANONYMOUS+')'+IE_WHITESPACE+'*'
 var IE_STACK_LINE = new RegExp('^'+IE_FUNCTION_CALL+'$')
-},{"stacktrace-js":1}]},{},[2])
-(2)
+},{}]},{},[3])
+(3)
 });
