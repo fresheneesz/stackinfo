@@ -88,6 +88,7 @@ How to submit pull requests:
 Change Log
 =========
 
+* 1.0.3 - adding another chrome trace pattern (event handlers)
 * 1.0.2
   * adding a couple chrome trace patterns that previously didn't parse
 * 1.0.0

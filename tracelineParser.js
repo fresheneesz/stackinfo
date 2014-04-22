@@ -3,10 +3,10 @@ module.exports = {
     chrome: function(line) {
         var m = line.match(CHROME_STACK_LINE);
         if (m) {
-            var file = m[8] || m[15] || m[22]
-            var fn = m[4] || m[7] || m[12] || m[19]
-            var lineNumber = m[10] || m[17]
-            var column = m[11] || m[18]
+            var file = m[9] || m[17] || m[24]
+            var fn = m[4] || m[7] || m[13] || m[21]
+            var lineNumber = m[11] || m[19]
+            var column = m[12] || m[20]
         } else {
             //throw new Error("Couldn't parse exception line: "+line)
         }
@@ -52,7 +52,7 @@ module.exports = {
     }
 }
 
-
+"Object.module.exports.test.TabBar.buttons.callback [as click] (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1546:9)"
 
 // The following 2 regex patterns were originally taken from google closure library: https://code.google.com/p/closure-library/source/browse/closure/goog/testing/stacktrace.js
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
@@ -66,7 +66,7 @@ var CHROME_STACKTRACE_JS_GETSOURCE_FAILURE = STACKTRACE_JS_GETSOURCE_FAILURE+'((
 
 var CHROME_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*):(\\d*))'
 var CHROME_IDENTIFIER_PATTERN = '\\<?'+IDENTIFIER_PATTERN_+'\\>?'
-var CHROME_COMPOUND_IDENTIFIER = "((new )?"+CHROME_IDENTIFIER_PATTERN+'(\\.'+CHROME_IDENTIFIER_PATTERN+')*)'
+var CHROME_COMPOUND_IDENTIFIER = "((new )?"+CHROME_IDENTIFIER_PATTERN+'(\\.'+CHROME_IDENTIFIER_PATTERN+')*)( \\[as '+IDENTIFIER_PATTERN_+'])?'
 var CHROME_UNKNOWN_IDENTIFIER = "(\\(\\?\\))"
 
 // output from stacktrace.js is: "name()@..." instead of "name (...)"
