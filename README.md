@@ -80,7 +80,7 @@ How to submit pull requests:
 3. clone your forked repo onto your machine and run `npm install` at its root
 4. If you're gonna work on multiple separate things, its best to create a separate branch for each of them
 5. edit!
-6. If it's a code change, please add to the unit tests (at test/testDeadunit.js) to verify that your change works
+6. If it's a code change, please add to the test file (at test/testStackinfo.js) to verify that your change works
 7. When you're done, run the unit tests and ensure they all pass
 8. Commit and push your changes
 9. Submit a pull request: https://help.github.com/articles/creating-a-pull-request
@@ -88,6 +88,7 @@ How to submit pull requests:
 Change Log
 =========
 
+* 1.0.4 - adding a firefox trace pattern
 * 1.0.3 - adding another chrome trace pattern (event handlers)
 * 1.0.2
   * adding a couple chrome trace patterns that previously didn't parse

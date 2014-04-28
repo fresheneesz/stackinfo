@@ -52,8 +52,6 @@ module.exports = {
     }
 }
 
-"Object.module.exports.test.TabBar.buttons.callback [as click] (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1546:9)"
-
 // The following 2 regex patterns were originally taken from google closure library: https://code.google.com/p/closure-library/source/browse/closure/goog/testing/stacktrace.js
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
 var IDENTIFIER_PATTERN_ = '[a-zA-Z_$][\\w$]*';
@@ -83,7 +81,8 @@ var CHROME_STACK_LINE = new RegExp('^'+CHROME_FUNCTION_CALL+'$')  // precompile 
 var FIREFOX_STACKTRACE_JS_GETSOURCE_FAILURE = STACKTRACE_JS_GETSOURCE_FAILURE+'((?!'+'\\(\\)@'+').)*'+'\\(\\)'
 var FIREFOX_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*))'
 var FIREFOX_ARRAY_PART = '\\[\\d*\\]'
-var FIREFOX_COMPOUND_IDENTIFIER = '(('+IDENTIFIER_PATTERN_+'|'+FIREFOX_ARRAY_PART+')((\\(\\))?|(\\.|\\<|/)*))*'
+var FIREFOX_WEIRD_PART = '\\(\\?\\)'
+var FIREFOX_COMPOUND_IDENTIFIER = '(('+IDENTIFIER_PATTERN_+'|'+FIREFOX_ARRAY_PART+'|'+FIREFOX_WEIRD_PART+')((\\(\\))?|(\\.|\\<|/)*))*'
 var FIREFOX_FUNCTION_CALL = '('+FIREFOX_COMPOUND_IDENTIFIER+'|'+FIREFOX_STACKTRACE_JS_GETSOURCE_FAILURE+')@'+FIREFOX_FILE_AND_LINE
 var FIREFOX_STACK_LINE = new RegExp('^'+FIREFOX_FUNCTION_CALL+'$')
 
