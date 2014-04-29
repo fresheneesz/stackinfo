@@ -55,3 +55,4 @@ function parseStacktrace(trace) {
 // here because i'm lazy, they're here for testing only
 module.exports.parsers = parsers
 module.exports.mode = mode
+module.exports.sourceCache = printStackTrace.implementation.prototype.sourceCache // expose this so you can consolidate caches together from different libraries

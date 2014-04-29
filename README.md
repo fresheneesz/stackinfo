@@ -52,7 +52,7 @@ Tested in the following browsers:
 * Firefox 26
 * IE 10
 
-Note that stackinfo doesn't work in node.js, but if you need that check out [node-stack-trace](https://github.com/felixge/node-stack-trace)
+Note that stackinfo doesn't work in node.js, but if you need that, check out [node-stack-trace](https://github.com/felixge/node-stack-trace)
 
 Todo
 ====
@@ -62,7 +62,6 @@ Todo
 * Create unit tests once deadunit supports browser
 * Support node.js via node-stack-trace
  * Possibly also use this for chrome, since it works in chrome too
-* Instead of returning an array of static objects, parse the stacktrace on the fly using accessors (for performance reasons - so you only do the parsing you need to)
 
 How to Contribute!
 ============
@@ -88,6 +87,7 @@ How to submit pull requests:
 Change Log
 =========
 
+* 1.0.6 - exposing stacktrace.js's sourceCache so it can be consolidated with source caches from other modules
 * 1.0.4 - adding a firefox trace pattern
 * 1.0.3 - adding another chrome trace pattern (event handlers)
 * 1.0.2
