@@ -8,6 +8,8 @@ module.exports = function(ex) {
 
     var options = undefined
     if(ex !== undefined) {
+        if(mode === 'ie' && ex.number === undefined)
+            ex.number = 1    // work around for this: https://github.com/stacktracejs/stacktrace.js/issues/80
         options = {e:ex, guess: true}
     }
     var trace = printStackTrace(options)
