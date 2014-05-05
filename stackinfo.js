@@ -8,7 +8,7 @@ module.exports = function(ex) {
 
     var options = undefined
     if(ex !== undefined) {
-        options = {e:ex}
+        options = {e:ex, guess: true}
     }
     var trace = printStackTrace(options)
 
