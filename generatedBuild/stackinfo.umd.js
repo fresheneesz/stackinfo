@@ -521,7 +521,11 @@ module.exports = function(ex) {
     if(parsers[mode] === undefined)
         throw new Error("browser "+mode+" not supported")
 
-    var trace = printStackTrace({e:ex})
+    var options = undefined
+    if(ex !== undefined) {
+        options = {e:ex}
+    }
+    var trace = printStackTrace()
 
     if(ex === undefined) {
         trace.splice(0,4) // strip stacktrace-js internals
