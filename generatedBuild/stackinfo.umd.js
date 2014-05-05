@@ -557,7 +557,13 @@ TraceInfo.prototype = {
 
 function getInfo(traceInfo) {
     if(traceInfo.cache === undefined) {
-        traceInfo.cache = parsers[mode](traceInfo.traceline)
+        var info = parsers[mode](traceInfo.traceline)
+        if(info.line !== undefined)
+            info.line = parseInt(info.line)
+        if(info.column !== undefined)
+            info.column = parseInt(info.column)
+
+        traceInfo.cache = info
     }
 
     return traceInfo.cache
