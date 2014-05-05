@@ -88,7 +88,7 @@ How to submit pull requests:
 Change Log
 =========
 
-* 1.0.8 - fixing bug where the wrong stacktrace would be returned when one was passed in
+* 1.0.9 - fixing bug where the wrong stacktrace would be returned when one was passed in
 * 1.0.6 - exposing stacktrace.js's sourceCache so it can be consolidated with source caches from other modules
 * 1.0.4 - adding a firefox trace pattern
 * 1.0.3 - adding another chrome trace pattern (event handlers)

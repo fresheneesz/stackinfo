@@ -10,7 +10,7 @@ module.exports = function(ex) {
     if(ex !== undefined) {
         options = {e:ex}
     }
-    var trace = printStackTrace()
+    var trace = printStackTrace(options)
 
     if(ex === undefined) {
         trace.splice(0,4) // strip stacktrace-js internals
