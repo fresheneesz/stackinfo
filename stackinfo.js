@@ -46,9 +46,9 @@ function getInfo(traceInfo) {
     if(traceInfo.cache === undefined) {
         var info = parsers[mode](traceInfo.traceline)
         if(info.line !== undefined)
-            info.line = parseInt(info.line)
+            info.line = parseInt(info.line, 10)
         if(info.column !== undefined)
-            info.column = parseInt(info.column)
+            info.column = parseInt(info.column, 10)
 
         traceInfo.cache = info
     }
