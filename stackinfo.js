@@ -28,7 +28,7 @@ TraceInfo.prototype = {
     get file() {
         return getInfo(this).file
     },
-    get fn() {
+    get function() {
         return getInfo(this).function
     },
     get line() {

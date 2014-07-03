@@ -543,7 +543,7 @@ TraceInfo.prototype = {
     get file() {
         return getInfo(this).file
     },
-    get fn() {
+    get function() {
         return getInfo(this).function
     },
     get line() {
@@ -590,10 +590,10 @@ module.exports = {
     chrome: function(line) {
         var m = line.match(CHROME_STACK_LINE);
         if (m) {
-            var file = m[9] || m[17] || m[24]
-            var fn = m[4] || m[7] || m[13] || m[21]
-            var lineNumber = m[11] || m[19]
-            var column = m[12] || m[20]
+            var file = m[9] || m[18] || m[26]
+            var fn = m[4] || m[7] || m[14] || m[23]
+            var lineNumber = m[11] || m[20]
+            var column = m[13] || m[22]
         } else {
             //throw new Error("Couldn't parse exception line: "+line)
         }
@@ -612,22 +612,24 @@ module.exports = {
             var file = m[8]
             var fn = m[1]
             var lineNumber = m[10]
+            var column = m[12]
         }
         
         return {
             file: file,
             function: fn,
-            line: lineNumber
+            line: lineNumber,
+            column: column
         }
     },
     
     ie: function(line) {
         var m = line.match(IE_STACK_LINE);
         if (m) {
-            var file = m[3] || m[9]
-            var fn = m[2] || m[8]
-            var lineNumber = m[5] || m[11]
-            var column = m[6] || m[12]
+            var file = m[3] || m[10]
+            var fn = m[2] || m[9]
+            var lineNumber = m[5] || m[12]
+            var column = m[7] || m[14]
         }
         
         return {
@@ -643,13 +645,14 @@ module.exports = {
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
 var IDENTIFIER_PATTERN_ = '[a-zA-Z_$][\\w$]*';
 // RegExp pattern for an URL + position inside the file.
-var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+|javascript:.*)';
+var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+?|javascript:.*)';
+var FILE_AND_LINE = URL_PATTERN_+'(:(\\d*)(:(\\d*))?)'
 
 var STACKTRACE_JS_GETSOURCE_FAILURE = 'getSource failed with url'
 
 var CHROME_STACKTRACE_JS_GETSOURCE_FAILURE = STACKTRACE_JS_GETSOURCE_FAILURE+'((?!'+'\\(\\)@'+').)*'
 
-var CHROME_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*):(\\d*))'
+var CHROME_FILE_AND_LINE = FILE_AND_LINE//URL_PATTERN_+'(:(\\d*):(\\d*))'
 var CHROME_IDENTIFIER_PATTERN = '\\<?'+IDENTIFIER_PATTERN_+'\\>?'
 var CHROME_COMPOUND_IDENTIFIER = "((new )?"+CHROME_IDENTIFIER_PATTERN+'(\\.'+CHROME_IDENTIFIER_PATTERN+')*)( \\[as '+IDENTIFIER_PATTERN_+'])?'
 var CHROME_UNKNOWN_IDENTIFIER = "(\\(\\?\\))"
@@ -666,7 +669,7 @@ var CHROME_STACK_LINE = new RegExp('^'+CHROME_FUNCTION_CALL+'$')  // precompile 
 
 
 var FIREFOX_STACKTRACE_JS_GETSOURCE_FAILURE = STACKTRACE_JS_GETSOURCE_FAILURE+'((?!'+'\\(\\)@'+').)*'+'\\(\\)'
-var FIREFOX_FILE_AND_LINE = URL_PATTERN_+'(:(\\d*))'
+var FIREFOX_FILE_AND_LINE = FILE_AND_LINE//URL_PATTERN_+'((:(\\d*):(\\d*))|(:(\\d*)))'
 var FIREFOX_ARRAY_PART = '\\[\\d*\\]'
 var FIREFOX_WEIRD_PART = '\\(\\?\\)'
 var FIREFOX_COMPOUND_IDENTIFIER = '(('+IDENTIFIER_PATTERN_+'|'+FIREFOX_ARRAY_PART+'|'+FIREFOX_WEIRD_PART+')((\\(\\))?|(\\.|\\<|/)*))*'
@@ -674,7 +677,7 @@ var FIREFOX_FUNCTION_CALL = '('+FIREFOX_COMPOUND_IDENTIFIER+'|'+FIREFOX_STACKTRA
 var FIREFOX_STACK_LINE = new RegExp('^'+FIREFOX_FUNCTION_CALL+'$')
 
 var IE_WHITESPACE = '[\\w \\t]'
-var IE_FILE_AND_LINE = CHROME_FILE_AND_LINE
+var IE_FILE_AND_LINE = FILE_AND_LINE
 var IE_ANONYMOUS = '('+IE_WHITESPACE+'*({anonymous}\\(\\)))@\\('+IE_FILE_AND_LINE+'\\)'
 var IE_NORMAL_FUNCTION = '('+IDENTIFIER_PATTERN_+')@'+IE_FILE_AND_LINE
 var IE_FUNCTION_CALL = '('+IE_NORMAL_FUNCTION+'|'+IE_ANONYMOUS+')'+IE_WHITESPACE+'*'

@@ -1,5 +1,5 @@
 {"name":"stackinfo",
- "version":"1.1.2",
+ "version":"1.1.3",
  "main":"stackinfo.js",
  "description": "Gets an object containing normalized stacktrace information across browsers.",
  "keywords": ["error", "stack", "trace", "javascript", "stacktrace", "exception", "crash"],
@@ -7,7 +7,8 @@
    "stacktrace-js":"https://github.com/stacktracejs/stacktrace.js/archive/b289dabc8a438ae24c26e0de0b2cb80de69b7988.tar.gz"
  },
  "devDependencies": {
-   "build-modules":"1.0.6"
+   "build-modules":"1.0.6",
+   "deadunit":""
  },
  "repository": {
    "type": "git",

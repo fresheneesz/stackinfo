@@ -88,6 +88,7 @@ How to submit pull requests:
 Change Log
 =========
 
+* 1.1.3 - upgrading tests to use deadunit and supporting new firefox stacklines that have columns now!
 * 1.1.2 - Working around this stacktrace.js bug for ie 10: https://github.com/stacktracejs/stacktrace.js/issues/80
 * 1.1.1 - outputting line and column numbers as Numbers instead of as Strings.
 * 1.0.9 - fixing bug where the wrong stacktrace would be returned when one was passed in

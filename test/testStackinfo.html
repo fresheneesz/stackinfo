@@ -1,54 +1,156 @@
+<body></body>
 
-<script src="../generatedBuild/stackinfo.umd.js"></script>
-<script src="moar.js"></script>
+<script src="generatedBuild/stackinfo.umd.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="node_modules/deadunit/browserPackage/deadunit.browser.gen.umd.js"></script>
+<script src="test/moar.js"></script>
 <script>
-    function A(asdf) {
-        B(asdf)
+
+    function A(asdf, t) {
+        B(asdf, t)
     }
-    
-    function B(asdf) {
-        C.call(this, asdf)
+
+    function B(asdf, t) {
+        C.call(this, asdf, t)
     }
-    
-    function C(asdf) {
-        new D(asdf)
+
+    function C(asdf, t) {
+        new D(asdf, t)
     }
-    
-    function D(asdf) {
-        E.fn1(asdf)
+
+    function D(asdf, t) {
+        E.fn1(asdf, t)
     }
-    
+
     var E = {
-        fn1: function(asdf) {
-            F[0][6]()(asdf)
+        fn1: function(asdf, t) {
+            F[0][6]()(asdf, t)
         }
     }
-    
+
     var F = [{
             6: function() {
-                return function(asdf) {
-                    G(asdf)
+                return function(asdf, t) {
+                    G(asdf, t)
                 }
             }
         }]
-    
-    var G = function(asdf) {
+
+    var G = function(asdf, t) {
         ;[1].forEach(function() {
-            H(asdf)  
-        })  
-    }
-    
-    var H = function() {
-        moar(function() {
-            var trace = stackinfo()
-            console.log(trace.length+" items in trace")
-            trace.forEach(function(v) {
-                console.log(JSON.stringify(v.info))
-            })
+            H(asdf, t)
         })
     }
 
-    A(23)
+    var H = function(arg, t) {
+        moar(function() {
+            var trace = stackinfo()
+
+            var chrome = stackinfo.mode === 'chrome'
+            var ie = stackinfo.mode === 'ie'
+            var firefox = stackinfo.mode === 'firefox'
+
+
+            t.eq(trace.length, 6) // not sure what happens to the rest of them
+
+            t.eq(trace[0].file, 'http://localhost:8100/')
+            if(ie) t.eq(trace[0].function, '{anonymous}()')
+            else   t.eq(trace[0].function, 'H')
+            t.eq(trace[0].line, 47)
+            if(ie) t.eq(trace[0].column, 13)
+            else   t.eq(trace[0].column, 25)
+
+            t.eq(trace[1].file, 'http://localhost:8100/test/moar.js')
+            if(ie) t.eq(trace[1].function, '{anonymous}()')
+            else   t.eq(trace[1].function, 'gen')
+            t.eq(trace[1].line, 12)
+            t.eq(trace[1].column, 9)
+
+            t.eq(trace[2].file, 'http://localhost:8100/test/moar.js')
+            t.eq(trace[2].function, 'x')
+            t.eq(trace[2].line, 7)
+            t.eq(trace[2].column, 5)
+
+            t.eq(trace[3].file, 'http://localhost:8100/test/moar.js')
+            t.eq(trace[3].function, 'moar')
+            t.eq(trace[3].line, 2)
+            t.eq(trace[3].column, 5)
+
+            t.eq(trace[4].file, 'http://localhost:8100/')
+            t.eq(trace[4].function, 'H')
+            t.eq(trace[4].line, 46)
+            t.eq(trace[4].column, 9)
+
+            t.eq(trace[5].file, 'http://localhost:8100/')
+            if(ie) t.eq(trace[5].function, '{anonymous}()')
+            else   t.eq(trace[5].function, 'G')
+            t.eq(trace[5].line, 41)
+            t.eq(trace[5].column, 13)
+        })
+    }
+
+
+    var Unit = deadunit.browser.gen
+
+    Unit.test(function(t) {
+
+        // traceline cases
+        if(stackinfo.mode === 'chrome') {
+            testTraceline("H()@http://localhost:8100/:47:25", {
+                file: "http://localhost:8100/",
+                line: '47', column: '25', 'function': 'H'
+            })
+            testTraceline("ProtoObjectFactory.<anonymous> (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1459:20)", {
+                file: "http://localhost:8001/git/frontend/test/allTestsFE.bundle.js",
+                line: '1459', column: '20', 'function': 'ProtoObjectFactory.<anonymous>'
+            })
+            testTraceline("(?)()@http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:79:15", {
+                file: "http://localhost:8001/git/frontend/test/allTestsFE.bundle.js",
+                line: '79', column: '15', 'function': undefined
+            })
+            testTraceline("Object.module.exports.test.TabBar.buttons.callback [as click] (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1546:9)", {
+                file: "http://localhost:8001/git/frontend/test/allTestsFE.bundle.js",
+                line: '1546', column: '9', 'function': 'Object.module.exports.test.TabBar.buttons.callback'
+            })
+        } else if(stackinfo.mode === 'firefox') {
+            testTraceline("(?)()@http://localhost:8100/test.web.bundle.js:75", {
+                file: "http://localhost:8100/test.web.bundle.js",
+                line: '75', column: undefined, 'function': '(?)()'
+            })
+            testTraceline("module.exports/req.onreadystatechange@http://localhost:8001/git/frontend/test/generated/allTestsFE.bundle.js:5943:1", {
+                file: "http://localhost:8001/git/frontend/test/generated/allTestsFE.bundle.js",
+                line: '5943', column: '1', 'function': 'module.exports/req.onreadystatechange'
+            })
+            testTraceline("module.exports<.getSourceMapObject@http://localhost:8001/git/frontend/test/generated/allTestsFE.bundle.js:4970:10", {
+                file: "http://localhost:8001/git/frontend/test/generated/allTestsFE.bundle.js",
+                line: '4970', column: '10', 'function': 'module.exports<.getSourceMapObject'
+            })
+        } else if(stackinfo.mode === 'ie') {
+            testTraceline("   {anonymous}()@(http://localhost:8100/:47:13)", {
+                file: "http://localhost:8100/",
+                line: '47', column: '13', 'function': '{anonymous}()'
+            })
+            testTraceline("x@http://localhost:8100/test/moar.js:7:5", {
+                file: "http://localhost:8100/test/moar.js",
+                line: '7', column: '5', 'function': 'x'
+            })
+        }
+
+        A(23, t)
+
+
+        // makes it easier to add cases - instead of having to reproduce an exception that creates such a traceline
+        function testTraceline(line, expectations) {
+            var result = stackinfo.parsers[stackinfo.mode](line)
+
+            t.log(line)
+            for(var thing in expectations) {
+                t.log(thing+"   <--- thing")
+                t.eq(result[thing], expectations[thing])
+            }
+        }
+
+    }).writeHtml()
 
     function bench() {
         var t0 = Date.now()
@@ -68,24 +170,7 @@
         return Date.now() - t0
     }
 
-    console.log("Generation benchmark took "+bench()+"ms")
-    console.log("Generation + parsing one line (benchmark 2) took "+bench2()+"ms")
-
-    // traceline cases
-    if(stackinfo.mode === 'chrome') {
-        testTraceline("ProtoObjectFactory.<anonymous> (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1459:20)")
-        testTraceline("(?)()@http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:79:15")
-        testTraceline("Object.module.exports.test.TabBar.buttons.callback [as click] (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1546:9)")
-    } else if(stackinfo.mode === 'firefox') {
-        testTraceline("(?)()@http://localhost:8100/test.web.bundle.js:75")
-    }
-
-
-    // makes it easier to add cases - instead of having to reproduce an exception that creates such a traceline
-    function testTraceline(line) {
-        var result = stackinfo.parsers[stackinfo.mode](line)
-
-        console.log(line+' - '+result.file+' '+result.function+' '+result.line+' '+result.column)
-    }
+    document.body.innerHTML += "<br>Generation benchmark took "+bench()+"ms"
+    document.body.innerHTML += "<br>Generation + parsing one line (benchmark 2) took "+bench2()+"ms"
 
 </script>
