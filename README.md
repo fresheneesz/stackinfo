@@ -57,7 +57,7 @@ Note that stackinfo doesn't work in node.js, but if you need that, check out [no
 Todo
 ====
 
-* When firefix [adds column numbers into its stack traces](https://bugzilla.mozilla.org/show_bug.cgi?id=762556), add those to stack info
+* When firefox [adds column numbers into its stack traces](https://bugzilla.mozilla.org/show_bug.cgi?id=762556), add those to stack info
 * Test more browsers
  * Particularly latest version of Opera, Opera mini, Android mobile, Safari, and Safari iOS
 * Create unit tests once deadunit supports browser
