@@ -643,7 +643,7 @@ module.exports = {
 
 // The following 2 regex patterns were originally taken from google closure library: https://code.google.com/p/closure-library/source/browse/closure/goog/testing/stacktrace.js
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
-var IDENTIFIER_PATTERN_ = '[a-zA-Z_$][\\w$]*';
+var IDENTIFIER_PATTERN_ = '[\\w$]*';
 // RegExp pattern for an URL + position inside the file.
 var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+?|javascript:.*)';
 var FILE_AND_LINE = URL_PATTERN_+'(:(\\d*)(:(\\d*))?)'
@@ -656,6 +656,9 @@ var CHROME_FILE_AND_LINE = FILE_AND_LINE//URL_PATTERN_+'(:(\\d*):(\\d*))'
 var CHROME_IDENTIFIER_PATTERN = '\\<?'+IDENTIFIER_PATTERN_+'\\>?'
 var CHROME_COMPOUND_IDENTIFIER = "((new )?"+CHROME_IDENTIFIER_PATTERN+'(\\.'+CHROME_IDENTIFIER_PATTERN+')*)( \\[as '+IDENTIFIER_PATTERN_+'])?'
 var CHROME_UNKNOWN_IDENTIFIER = "(\\(\\?\\))"
+
+
+"Object.38.module.exports (http://localhost:8100/test/generated/deadunitTests.browser.umd.js:7769:14)"
 
 // output from stacktrace.js is: "name()@..." instead of "name (...)"
 var CHROME_ANONYMOUS_FUNCTION = '('+CHROME_STACKTRACE_JS_GETSOURCE_FAILURE+'|'+CHROME_COMPOUND_IDENTIFIER+'|'+CHROME_UNKNOWN_IDENTIFIER+')'

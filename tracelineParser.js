@@ -56,7 +56,7 @@ module.exports = {
 
 // The following 2 regex patterns were originally taken from google closure library: https://code.google.com/p/closure-library/source/browse/closure/goog/testing/stacktrace.js
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
-var IDENTIFIER_PATTERN_ = '[a-zA-Z_$][\\w$]*';
+var IDENTIFIER_PATTERN_ = '[\\w$]*';
 // RegExp pattern for an URL + position inside the file.
 var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+?|javascript:.*)';
 var FILE_AND_LINE = URL_PATTERN_+'(:(\\d*)(:(\\d*))?)'

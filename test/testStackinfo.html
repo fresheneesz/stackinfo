@@ -92,9 +92,9 @@
 
     var Unit = deadunit.browser.gen
 
-    Unit.test(function(t) {
+    var unittest = Unit.test(function(t) {
 
-        // traceline cases
+        this.test("traceline cases", function(t) {
         if(stackinfo.mode === 'chrome') {
             testTraceline("H()@http://localhost:8100/:47:25", {
                 file: "http://localhost:8100/",
@@ -112,6 +112,20 @@
                 file: "http://localhost:8001/git/frontend/test/allTestsFE.bundle.js",
                 line: '1546', column: '9', 'function': 'Object.module.exports.test.TabBar.buttons.callback'
             })
+
+            // todo: add this test into stacktrace.js's line parser
+            testTraceline("{anonymous}()@module.exports.test.Style.$kill [as kill] (http://localhost:8100/src/test/blocksTests.umd.js:216:20)", {
+                file: "http://localhost:8100/src/test/blocksTests.umd.js",
+                line: '216', column: '20', 'function': '{anonymous}()@module.exports.test.Style.$kill'
+            })
+
+            testTraceline("Object.38.module.exports (http://localhost:8100/test/generated/deadunitTests.browser.umd.js:7769:14)", {
+                file: "http://localhost:8100/test/generated/deadunitTests.browser.umd.js",
+                line: '7769', column: '14', 'function': 'Object.38.module.exports'
+            })
+
+
+
         } else if(stackinfo.mode === 'firefox') {
             testTraceline("(?)()@http://localhost:8100/test.web.bundle.js:75", {
                 file: "http://localhost:8100/test.web.bundle.js",
@@ -136,21 +150,31 @@
             })
         }
 
-        A(23, t)
 
+            // makes it easier to add cases - instead of having to reproduce an exception that creates such a traceline
+            function testTraceline(line, expectations) {
+                var result = stackinfo.parsers[stackinfo.mode](line)
 
-        // makes it easier to add cases - instead of having to reproduce an exception that creates such a traceline
-        function testTraceline(line, expectations) {
-            var result = stackinfo.parsers[stackinfo.mode](line)
-
-            t.log(line)
-            for(var thing in expectations) {
-                t.log(thing+"   <--- thing")
-                t.eq(result[thing], expectations[thing])
+                t.log(line)
+                for(var thing in expectations) {
+                    t.log(thing+"   <--- thing")
+                    t.eq(result[thing], expectations[thing])
+                }
             }
-        }
+        })
 
-    }).writeHtml()
+        this.test("full usage", function(t) {
+            this.count(25)
+
+            A(23, t)
+        })
+
+    })
+
+    unittest.writeHtml().then(function() {
+        document.body.innerHTML += "<br>Generation benchmark took "+bench()+"ms"
+        document.body.innerHTML += "<br>Generation + parsing one line (benchmark 2) took "+bench2()+"ms"
+    })
 
     function bench() {
         var t0 = Date.now()
@@ -170,7 +194,16 @@
         return Date.now() - t0
     }
 
-    document.body.innerHTML += "<br>Generation benchmark took "+bench()+"ms"
-    document.body.innerHTML += "<br>Generation + parsing one line (benchmark 2) took "+bench2()+"ms"
+
+    // callback to pass into 'catch' when the promise chain is done
+    function done(e) {
+        return setTimeout(function(){
+            if(e.stack !== undefined) {
+                throw e.stack
+            } else {
+                throw e
+            }
+        },0)
+    }
 
 </script>
