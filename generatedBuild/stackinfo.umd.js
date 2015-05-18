@@ -1,4 +1,4 @@
-!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.stackinfo=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.stackinfo=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 
 
 module.exports = exceptionMode(createException()) // basically what browser this is
@@ -49,7 +49,7 @@ function createException() {
     }
 }
 
-},{}],2:[function(_dereq_,module,exports){
+},{}],2:[function(require,module,exports){
 // Domain Public by Eric Wendelin http://eriwen.com/ (2008)
 //                  Luke Smith http://lucassmith.name/ (2008)
 //                  Loic Dachary <loic@dachary.org> (2008)
@@ -512,10 +512,10 @@ function createException() {
 
 	return printStackTrace;
 }));
-},{}],3:[function(_dereq_,module,exports){
-var printStackTrace = _dereq_('stacktrace-js')
-var parsers = _dereq_('./tracelineParser')
-var mode = _dereq_('./exceptionMode')
+},{}],3:[function(require,module,exports){
+var printStackTrace = require('stacktrace-js')
+var parsers = require('./tracelineParser')
+var mode = require('./exceptionMode')
 
 module.exports = function(ex) {
     if(parsers[mode] === undefined)
@@ -584,7 +584,7 @@ module.exports.parsers = parsers
 module.exports.mode = mode
 module.exports.sourceCache = printStackTrace.implementation.prototype.sourceCache // expose this so you can consolidate caches together from different libraries
 
-},{"./exceptionMode":1,"./tracelineParser":4,"stacktrace-js":2}],4:[function(_dereq_,module,exports){
+},{"./exceptionMode":1,"./tracelineParser":4,"stacktrace-js":2}],4:[function(require,module,exports){
 
 module.exports = {
     chrome: function(line) {
@@ -645,7 +645,7 @@ module.exports = {
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
 var IDENTIFIER_PATTERN_ = '[\\w$]*';
 // RegExp pattern for an URL + position inside the file.
-var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+?|javascript:.*)';
+var URL_PATTERN_ = '((?:http|https|file|chrome-extension)://[^\\s)]+?|javascript:.*)';
 var FILE_AND_LINE = URL_PATTERN_+'(:(\\d*)(:(\\d*))?)'
 
 var STACKTRACE_JS_GETSOURCE_FAILURE = 'getSource failed with url'
@@ -656,9 +656,6 @@ var CHROME_FILE_AND_LINE = FILE_AND_LINE//URL_PATTERN_+'(:(\\d*):(\\d*))'
 var CHROME_IDENTIFIER_PATTERN = '\\<?'+IDENTIFIER_PATTERN_+'\\>?'
 var CHROME_COMPOUND_IDENTIFIER = "((new )?"+CHROME_IDENTIFIER_PATTERN+'(\\.'+CHROME_IDENTIFIER_PATTERN+')*)( \\[as '+IDENTIFIER_PATTERN_+'])?'
 var CHROME_UNKNOWN_IDENTIFIER = "(\\(\\?\\))"
-
-
-"Object.38.module.exports (http://localhost:8100/test/generated/deadunitTests.browser.umd.js:7769:14)"
 
 // output from stacktrace.js is: "name()@..." instead of "name (...)"
 var CHROME_ANONYMOUS_FUNCTION = '('+CHROME_STACKTRACE_JS_GETSOURCE_FAILURE+'|'+CHROME_COMPOUND_IDENTIFIER+'|'+CHROME_UNKNOWN_IDENTIFIER+')'
@@ -685,6 +682,5 @@ var IE_ANONYMOUS = '('+IE_WHITESPACE+'*({anonymous}\\(\\)))@\\('+IE_FILE_AND_LIN
 var IE_NORMAL_FUNCTION = '('+IDENTIFIER_PATTERN_+')@'+IE_FILE_AND_LINE
 var IE_FUNCTION_CALL = '('+IE_NORMAL_FUNCTION+'|'+IE_ANONYMOUS+')'+IE_WHITESPACE+'*'
 var IE_STACK_LINE = new RegExp('^'+IE_FUNCTION_CALL+'$')
-},{}]},{},[3])
-(3)
+},{}]},{},[3])(3)
 });

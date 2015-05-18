@@ -58,7 +58,7 @@ module.exports = {
 // RegExp pattern for JavaScript identifiers. We don't support Unicode identifiers defined in ECMAScript v3.
 var IDENTIFIER_PATTERN_ = '[\\w$]*';
 // RegExp pattern for an URL + position inside the file.
-var URL_PATTERN_ = '((?:http|https|file)://[^\\s)]+?|javascript:.*)';
+var URL_PATTERN_ = '((?:http|https|file|chrome-extension)://[^\\s)]+?|javascript:.*)';
 var FILE_AND_LINE = URL_PATTERN_+'(:(\\d*)(:(\\d*))?)'
 
 var STACKTRACE_JS_GETSOURCE_FAILURE = 'getSource failed with url'
