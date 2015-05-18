@@ -90,9 +90,7 @@
     }
 
 
-    var Unit = deadunit.browser.gen
-
-    var unittest = Unit.test(function(t) {
+    var unittest = deadunit.test(function(t) {
 
         this.test("traceline cases", function(t) {
         if(stackinfo.mode === 'chrome') {
@@ -111,6 +109,10 @@
             testTraceline("Object.module.exports.test.TabBar.buttons.callback [as click] (http://localhost:8001/git/frontend/test/allTestsFE.bundle.js:1546:9)", {
                 file: "http://localhost:8001/git/frontend/test/allTestsFE.bundle.js",
                 line: '1546', column: '9', 'function': 'Object.module.exports.test.TabBar.buttons.callback'
+            })
+            testTraceline("send (chrome-extension://pmpjiipnaoggoigafbgbjdlkkfalidaa/test/notify.js:41:25)", {
+                file: "chrome-extension://pmpjiipnaoggoigafbgbjdlkkfalidaa/test/notify.js",
+                line: '41', column: '25', 'function': 'send'
             })
 
             // todo: add this test into stacktrace.js's line parser

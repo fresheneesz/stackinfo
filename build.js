@@ -11,7 +11,7 @@ if(!fs.existsSync(buildDirectory)) {
 
 console.log('building and minifying...')
 build(buildDirectory, name, '/*Copyright 2014 Billy Tetrud - MIT license, free for any use*/',
-    __dirname+"/"+name+".js",
+    __dirname+"/"+name+".js", {},
     function(e) {
         if(e === undefined) {
             console.log('done building browser package')
