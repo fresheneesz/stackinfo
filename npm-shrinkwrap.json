@@ -1,0 +1,11 @@
+{
+  "name": "stackinfo",
+  "version": "1.1.4",
+  "dependencies": {
+    "stacktrace-js": {
+      "version": "0.6.0",
+      "from": "https://github.com/stacktracejs/stacktrace.js/archive/b289dabc8a438ae24c26e0de0b2cb80de69b7988.tar.gz",
+      "resolved": "https://github.com/stacktracejs/stacktrace.js/archive/b289dabc8a438ae24c26e0de0b2cb80de69b7988.tar.gz"
+    }
+  }
+}

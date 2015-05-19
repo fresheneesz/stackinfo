@@ -1,4 +1,76 @@
 !function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.stackinfo=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var printStackTrace = require('stacktrace-js')
+var parsers = require('./tracelineParser')
+var mode = require('./exceptionMode')
+
+module.exports = function(ex) {
+    if(parsers[mode] === undefined)
+        throw new Error("browser "+mode+" not supported")
+
+    var options = undefined
+    if(ex !== undefined) {
+        if(mode === 'ie' && ex.number === undefined)
+            ex.number = 1    // work around for this: https://github.com/stacktracejs/stacktrace.js/issues/80
+        options = {e:ex, guess: true}
+    }
+    var trace = printStackTrace(options)
+
+    if(ex === undefined) {
+        trace.splice(0,4) // strip stacktrace-js internals
+    }
+
+    return parseStacktrace(trace)
+}
+
+function TraceInfo(traceline) {
+    this.traceline = traceline
+}
+TraceInfo.prototype = {
+    get file() {
+        return getInfo(this).file
+    },
+    get function() {
+        return getInfo(this).function
+    },
+    get line() {
+        return getInfo(this).line
+    },
+    get column() {
+        return getInfo(this).column
+    },
+    get info() {
+        return getInfo(this)
+    }
+}
+
+function getInfo(traceInfo) {
+    if(traceInfo.cache === undefined) {
+        var info = parsers[mode](traceInfo.traceline)
+        if(info.line !== undefined)
+            info.line = parseInt(info.line, 10)
+        if(info.column !== undefined)
+            info.column = parseInt(info.column, 10)
+
+        traceInfo.cache = info
+    }
+
+    return traceInfo.cache
+}
+
+function parseStacktrace(trace) {
+    var results = []
+    for(var n = 0; n<trace.length; n++) {
+        results.push(new TraceInfo(trace[n]))
+    }
+    return results
+}
+
+// here because i'm lazy, they're here for testing only
+module.exports.parsers = parsers
+module.exports.mode = mode
+module.exports.sourceCache = printStackTrace.implementation.prototype.sourceCache // expose this so you can consolidate caches together from different libraries
+
+},{"./exceptionMode":2,"./tracelineParser":4,"stacktrace-js":3}],2:[function(require,module,exports){
 
 
 module.exports = exceptionMode(createException()) // basically what browser this is
@@ -49,7 +121,7 @@ function createException() {
     }
 }
 
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 // Domain Public by Eric Wendelin http://eriwen.com/ (2008)
 //                  Luke Smith http://lucassmith.name/ (2008)
 //                  Loic Dachary <loic@dachary.org> (2008)
@@ -512,79 +584,7 @@ function createException() {
 
 	return printStackTrace;
 }));
-},{}],3:[function(require,module,exports){
-var printStackTrace = require('stacktrace-js')
-var parsers = require('./tracelineParser')
-var mode = require('./exceptionMode')
-
-module.exports = function(ex) {
-    if(parsers[mode] === undefined)
-        throw new Error("browser "+mode+" not supported")
-
-    var options = undefined
-    if(ex !== undefined) {
-        if(mode === 'ie' && ex.number === undefined)
-            ex.number = 1    // work around for this: https://github.com/stacktracejs/stacktrace.js/issues/80
-        options = {e:ex, guess: true}
-    }
-    var trace = printStackTrace(options)
-
-    if(ex === undefined) {
-        trace.splice(0,4) // strip stacktrace-js internals
-    }
-
-    return parseStacktrace(trace)
-}
-
-function TraceInfo(traceline) {
-    this.traceline = traceline
-}
-TraceInfo.prototype = {
-    get file() {
-        return getInfo(this).file
-    },
-    get function() {
-        return getInfo(this).function
-    },
-    get line() {
-        return getInfo(this).line
-    },
-    get column() {
-        return getInfo(this).column
-    },
-    get info() {
-        return getInfo(this)
-    }
-}
-
-function getInfo(traceInfo) {
-    if(traceInfo.cache === undefined) {
-        var info = parsers[mode](traceInfo.traceline)
-        if(info.line !== undefined)
-            info.line = parseInt(info.line, 10)
-        if(info.column !== undefined)
-            info.column = parseInt(info.column, 10)
-
-        traceInfo.cache = info
-    }
-
-    return traceInfo.cache
-}
-
-function parseStacktrace(trace) {
-    var results = []
-    for(var n = 0; n<trace.length; n++) {
-        results.push(new TraceInfo(trace[n]))
-    }
-    return results
-}
-
-// here because i'm lazy, they're here for testing only
-module.exports.parsers = parsers
-module.exports.mode = mode
-module.exports.sourceCache = printStackTrace.implementation.prototype.sourceCache // expose this so you can consolidate caches together from different libraries
-
-},{"./exceptionMode":1,"./tracelineParser":4,"stacktrace-js":2}],4:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
 module.exports = {
     chrome: function(line) {
@@ -656,9 +656,11 @@ var CHROME_FILE_AND_LINE = FILE_AND_LINE//URL_PATTERN_+'(:(\\d*):(\\d*))'
 var CHROME_IDENTIFIER_PATTERN = '\\<?'+IDENTIFIER_PATTERN_+'\\>?'
 var CHROME_COMPOUND_IDENTIFIER = "((new )?"+CHROME_IDENTIFIER_PATTERN+'(\\.'+CHROME_IDENTIFIER_PATTERN+')*)( \\[as '+IDENTIFIER_PATTERN_+'])?'
 var CHROME_UNKNOWN_IDENTIFIER = "(\\(\\?\\))"
+var CHROME_ANONYMOUS_IDENTIFIER = "{anonymous}"
 
 // output from stacktrace.js is: "name()@..." instead of "name (...)"
-var CHROME_ANONYMOUS_FUNCTION = '('+CHROME_STACKTRACE_JS_GETSOURCE_FAILURE+'|'+CHROME_COMPOUND_IDENTIFIER+'|'+CHROME_UNKNOWN_IDENTIFIER+')'
+var CHROME_ANONYMOUS_FUNCTION = '('+CHROME_STACKTRACE_JS_GETSOURCE_FAILURE+'|'+CHROME_COMPOUND_IDENTIFIER
+                                   +'|'+CHROME_UNKNOWN_IDENTIFIER+'|'+CHROME_ANONYMOUS_IDENTIFIER+')'
                                     +'\\(\\)'+'@'+CHROME_FILE_AND_LINE
 var CHROME_NORMAL_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' \\('+CHROME_FILE_AND_LINE+'\\)'
 var CHROME_NATIVE_FUNCTION = CHROME_COMPOUND_IDENTIFIER+' (\\(native\\))'
@@ -682,5 +684,5 @@ var IE_ANONYMOUS = '('+IE_WHITESPACE+'*({anonymous}\\(\\)))@\\('+IE_FILE_AND_LIN
 var IE_NORMAL_FUNCTION = '('+IDENTIFIER_PATTERN_+')@'+IE_FILE_AND_LINE
 var IE_FUNCTION_CALL = '('+IE_NORMAL_FUNCTION+'|'+IE_ANONYMOUS+')'+IE_WHITESPACE+'*'
 var IE_STACK_LINE = new RegExp('^'+IE_FUNCTION_CALL+'$')
-},{}]},{},[3])(3)
+},{}]},{},[1])(1)
 });

@@ -1,5 +1,5 @@
 {"name":"stackinfo",
- "version":"1.1.4",
+ "version":"1.1.5",
  "main":"stackinfo.js",
  "description": "Gets an object containing normalized stacktrace information across browsers.",
  "keywords": ["error", "stack", "trace", "javascript", "stacktrace", "exception", "crash"],
